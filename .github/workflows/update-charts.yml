@@ -1,0 +1,37 @@
+name: Refresh levels charts
+
+on:
+  schedule:
+    # Weekdays 22:00 UTC, after the US market close
+    - cron: "0 22 * * 1-5"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "export_zones.py"
+      - "spy_qqq_levels.py"
+      - "docs/index.html"
+      - ".github/workflows/update-charts.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Regenerate charts and zones
+        run: python3 export_zones.py
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/charts docs/zones.json
+          git diff --cached --quiet || git commit -m "Refresh levels charts [skip ci]"
+          git push
