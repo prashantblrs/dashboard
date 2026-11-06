@@ -200,6 +200,9 @@ function show(ticker) {
 
 function addTicker(raw) {
   const ticker = (raw || "").toUpperCase().trim();
+  // Empty input (e.g. clicking Show again after a ticker was added and the
+  // box was cleared) is not an error — just do nothing.
+  if (!ticker) return;
   if (!/^[A-Z0-9.\-^]{1,12}$/.test(ticker)) {
     document.getElementById("chart-meta").innerHTML =
       '<span class="err">Enter a valid ticker symbol, e.g. NVDA, AAPL, MSFT.</span>';
@@ -215,6 +218,11 @@ document.getElementById("add-btn").addEventListener("click", () => {
 });
 document.getElementById("ticker-input").addEventListener("keydown", e => {
   if (e.key === "Enter") addTicker(e.target.value);
+});
+document.getElementById("ticker-input").addEventListener("input", () => {
+  // Clear a stale validation error as soon as the user starts typing again.
+  const meta = document.getElementById("chart-meta");
+  if (meta.querySelector(".err")) meta.textContent = "";
 });
 
 fetch("zones.json")
