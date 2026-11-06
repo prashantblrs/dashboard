@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate the GitHub Pages assets for the levels dashboard.
 
-For each ticker: builds the combined Daily (1Y) + Weekly (2Y)
+For each ticker: builds the combined Daily (1Y) + Weekly (5Y) + Monthly (10Y)
 chart (spy_qqq_levels logic, unchanged), saves the PNG
 to docs/charts/, and writes the zone data to docs/zones.json for the page.
 
@@ -58,7 +58,7 @@ def save_ticker_list(tickers):
 
 
 def make_chart(ticker: str) -> bytes:
-    fig, axes = plt.subplots(2, 1, figsize=(15, 11))
+    fig, axes = plt.subplots(3, 1, figsize=(15, 16))
     for ax, (tf_name, cfg) in zip(axes, lv.TIMEFRAMES.items()):
         df = lv.prepare(lv.fetch_data(ticker, cfg["fetch_period"], cfg["interval"]), cfg)
         zones = lv.build_zones(df, cfg["pivot_window"], cfg["max_zones"])
@@ -66,7 +66,7 @@ def make_chart(ticker: str) -> bytes:
     handles = [Rectangle((0, 0), 1, 1, color=lv.SUPPORT_COLOR, alpha=0.6),
                Rectangle((0, 0), 1, 1, color=lv.RESIST_COLOR, alpha=0.6)]
     fig.legend(handles, ["Support zone", "Resistance zone"], loc="upper right", fontsize=9)
-    fig.suptitle(f"{ticker} – Daily (1Y) & Weekly (2Y) Key Zones", fontsize=14)
+    fig.suptitle(f"{ticker} – Daily (1Y), Weekly (5Y) & Monthly (10Y) Key Zones", fontsize=14)
     fig.tight_layout(rect=(0, 0, 1, 0.96))
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=130)

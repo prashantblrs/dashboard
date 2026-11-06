@@ -2,15 +2,17 @@
 """
 SPY / QQQ support & resistance zone analyzer.
 
-  * Daily chart  -> last 1 year of daily candles
-  * Weekly chart -> last 2 years of weekly candles
+  * Daily chart   -> last 1 year of daily candles
+  * Weekly chart  -> last 5 years of weekly candles
+  * Monthly chart -> last 10 years of monthly candles
   * Zones are found from swing highs/lows (pivots), clustered by price,
     and drawn as light bands:
         green = support    (zone below the current price)
         red   = resistance (zone above the current price)
-  * SMA(21) blue, SMA(50) black, SMA(200) orange (daily only; weekly
-    uses weekly closes and skips the 200)
-  * One PNG per ticker (daily on top, weekly below). No text output.
+  * SMA(21) blue, SMA(50) black, SMA(200) orange (daily only; weekly and
+    monthly use 21 / 50)
+  * One PNG per ticker (daily on top, weekly in the middle, monthly below).
+    No text output.
 
 Usage:
     pip install yfinance pandas numpy matplotlib
@@ -43,12 +45,20 @@ TIMEFRAMES = {
         "smas": [21, 50, 200],
     },
     "Weekly": {
-        "display_years": 2,
-        "fetch_period": "3y", # extra history so SMA(50) is valid across the chart
+        "display_years": 5,
+        "fetch_period": "6y", # extra history so SMA(50) is valid across the chart
         "interval": "1wk",
         "pivot_window": 3,
         "max_zones": 6,
-        "smas": [21, 50],     # weekly 200 skipped (not enough data)
+        "smas": [21, 50],
+    },
+    "Monthly": {
+        "display_years": 10,
+        "fetch_period": "15y", # extra history so SMA(50) is valid across the chart
+        "interval": "1mo",
+        "pivot_window": 3,
+        "max_zones": 6,
+        "smas": [21, 50],
     },
 }
 
@@ -284,7 +294,7 @@ def main():
 
     # 2) Draw and save one chart per ticker
     for ticker in tickers:
-        fig, axes = plt.subplots(2, 1, figsize=(15, 11), num=f"{ticker} zones")
+        fig, axes = plt.subplots(3, 1, figsize=(15, 16), num=f"{ticker} zones")
         for ax, (tf_name, cfg) in zip(axes, TIMEFRAMES.items()):
             df = data[(ticker, tf_name)]
             zones = build_zones(df, cfg["pivot_window"], cfg["max_zones"])
@@ -294,7 +304,7 @@ def main():
                    Rectangle((0, 0), 1, 1, color=RESIST_COLOR, alpha=0.6)]
         fig.legend(handles, ["Support zone", "Resistance zone"],
                    loc="upper right", fontsize=9)
-        fig.suptitle(f"{ticker} – Daily (1Y) & Weekly (2Y) Key Zones", fontsize=14)
+        fig.suptitle(f"{ticker} – Daily (1Y), Weekly (5Y) & Monthly (10Y) Key Zones", fontsize=14)
         fig.tight_layout(rect=(0, 0, 1, 0.96))
         fig.savefig(os.path.join(args.outdir, f"{ticker}_zones.png"), dpi=130)
 

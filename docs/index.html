@@ -26,8 +26,8 @@
   .card h2 { font-size: 17px; margin: 0 0 4px; }
   .meta { color: #555; font-size: 13px; margin: 0 0 12px; }
   img.chart { width: 100%; height: auto; display: block; border-radius: 8px; }
-  .zones { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 760px) { .zones { grid-template-columns: 1fr; } }
+  .zones { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 1000px) { .zones { grid-template-columns: 1fr; } }
   table { width: 100%; border-collapse: collapse; font-size: 14px; }
   th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #eee; }
   th { color: #555; font-weight: 600; }
@@ -46,7 +46,7 @@
 <body>
 <div class="wrap">
   <h1>Demand / supply levels</h1>
-  <p class="sub">Daily (1Y) and weekly (2Y) support and resistance zones with SMA 21 / 50 / 200.</p>
+  <p class="sub">Daily (1Y), weekly (5Y) and monthly (10Y) support and resistance zones with SMA 21 / 50 / 200.</p>
 
   <div class="add">
     <input id="ticker-input" type="text" placeholder="Enter ticker, e.g. NVDA" maxlength="12"
@@ -70,16 +70,22 @@
 
   <div class="zones">
     <div class="card">
-      <h2>Daily zones</h2>
+      <h2>Daily zones · 1Y</h2>
       <p class="meta" id="daily-meta"></p>
       <table><thead><tr><th>Type</th><th>Zone</th><th>Touches</th><th>vs last close</th></tr></thead>
       <tbody id="daily-body"></tbody></table>
     </div>
     <div class="card">
-      <h2>Weekly zones</h2>
+      <h2>Weekly zones · 5Y</h2>
       <p class="meta" id="weekly-meta"></p>
       <table><thead><tr><th>Type</th><th>Zone</th><th>Touches</th><th>vs last close</th></tr></thead>
       <tbody id="weekly-body"></tbody></table>
+    </div>
+    <div class="card">
+      <h2>Monthly zones · 10Y</h2>
+      <p class="meta" id="monthly-meta"></p>
+      <table><thead><tr><th>Type</th><th>Zone</th><th>Touches</th><th>vs last close</th></tr></thead>
+      <tbody id="monthly-body"></tbody></table>
     </div>
   </div>
 
@@ -154,23 +160,27 @@ function show(ticker) {
     actions.hidden = true;
     document.getElementById("daily-meta").textContent = "";
     document.getElementById("weekly-meta").textContent = "";
+    document.getElementById("monthly-meta").textContent = "";
     document.getElementById("daily-body").innerHTML = '<tr><td colspan="4">Zones not generated yet</td></tr>';
     document.getElementById("weekly-body").innerHTML = '<tr><td colspan="4">Zones not generated yet</td></tr>';
+    document.getElementById("monthly-body").innerHTML = '<tr><td colspan="4">Zones not generated yet</td></tr>';
     return;
   }
   notice.hidden = true;
   img.hidden = false;
   actions.hidden = false;
-  const d = t.Daily, w = t.Weekly;
+  const d = t.Daily, w = t.Weekly, m = t.Monthly || { last_close: d.last_close, as_of: "—", zones: [] };
   document.getElementById("chart-meta").textContent =
-    "Last close " + d.last_close.toFixed(2) + " · daily as of " + d.as_of + " · weekly as of " + w.as_of;
+    "Last close " + d.last_close.toFixed(2) + " · daily as of " + d.as_of + " · weekly as of " + w.as_of + " · monthly as of " + m.as_of;
   img.src = "charts/" + ticker + "_zones.png";
   document.getElementById("dl").href = "charts/" + ticker + "_zones.png";
   document.getElementById("dl").setAttribute("download", ticker + "_zones.png");
   document.getElementById("daily-meta").textContent = "Last close " + d.last_close.toFixed(2) + " · as of " + d.as_of;
   document.getElementById("weekly-meta").textContent = "Last close " + w.last_close.toFixed(2) + " · as of " + w.as_of;
+  document.getElementById("monthly-meta").textContent = "Last close " + m.last_close.toFixed(2) + " · as of " + m.as_of;
   document.getElementById("daily-body").innerHTML = d.zones.map(zoneRow).join("") || '<tr><td colspan="4">No zones</td></tr>';
   document.getElementById("weekly-body").innerHTML = w.zones.map(zoneRow).join("") || '<tr><td colspan="4">No zones</td></tr>';
+  document.getElementById("monthly-body").innerHTML = m.zones.map(zoneRow).join("") || '<tr><td colspan="4">No zones</td></tr>';
 }
 
 function addTicker(raw) {

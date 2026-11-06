@@ -1,6 +1,6 @@
 # Demand / supply levels
 
-Daily (1Y) and weekly (2Y) support/resistance charts with SMA 21 / 50 / 200.
+Daily (1Y), weekly (5Y) and monthly (10Y) support/resistance charts with SMA 21 / 50 / 200.
 `spy_qqq_levels.py` is the zone engine: zones are found from swing highs/lows
 (pivots), clustered by price, and drawn as light bands — green is support,
 red is resistance.
