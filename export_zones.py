@@ -1,15 +1,27 @@
 #!/usr/bin/env python3
 """Regenerate the GitHub Pages assets for the levels dashboard.
 
-For each ticker in TICKERS: builds the combined Daily (1Y) + Weekly (2Y)
+For each ticker: builds the combined Daily (1Y) + Weekly (2Y)
 chart (spy_qqq_levels logic, unchanged), saves the PNG
 to docs/charts/, and writes the zone data to docs/zones.json for the page.
 
-Run:  python3 export_zones.py            (from the repo root)
+Tickers come from tickers.json (default SPY, QQQ, IWM, DIA).
+
+Run:  python3 export_zones.py                       (all tickers in tickers.json)
+      python3 export_zones.py --tickers NVDA,META   (only those tickers;
+                                                     merges into the existing
+                                                     zones.json and adds them
+                                                     to tickers.json so the
+                                                     nightly refresh keeps them)
+
+Results are MERGED into the existing docs/zones.json, never wiped:
+tickers already in zones.json keep their data unless regenerated here.
 """
+import argparse
 import io
 import json
 import os
+import sys
 import warnings
 from datetime import datetime, timezone
 
@@ -20,9 +32,29 @@ from matplotlib.patches import Rectangle
 
 import spy_qqq_levels as lv
 
-TICKERS = ["SPY", "QQQ", "IWM", "DIA"]
-OUTDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
+BASE = os.path.dirname(os.path.abspath(__file__))
+OUTDIR = os.path.join(BASE, "docs")
 CHART_DIR = os.path.join(OUTDIR, "charts")
+TICKERS_FILE = os.path.join(BASE, "tickers.json")
+ZONES_FILE = os.path.join(OUTDIR, "zones.json")
+DEFAULT_TICKERS = ["SPY", "QQQ", "IWM", "DIA"]
+
+
+def load_ticker_list():
+    try:
+        with open(TICKERS_FILE) as f:
+            tickers = json.load(f).get("tickers") or []
+        return [str(t).upper().strip() for t in tickers if str(t).strip()]
+    except FileNotFoundError:
+        return list(DEFAULT_TICKERS)
+    except (json.JSONDecodeError, AttributeError):
+        return list(DEFAULT_TICKERS)
+
+
+def save_ticker_list(tickers):
+    with open(TICKERS_FILE, "w") as f:
+        json.dump({"tickers": tickers}, f, indent=2)
+        f.write("\n")
 
 
 def make_chart(ticker: str) -> bytes:
@@ -66,17 +98,58 @@ def zone_json(ticker: str) -> dict:
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Regenerate levels charts and zones")
+    parser.add_argument("--tickers", default="",
+                        help="Comma-separated tickers to generate (e.g. NVDA,META). "
+                             "If omitted, all tickers in tickers.json are generated.")
+    args = parser.parse_args()
+
     warnings.filterwarnings("ignore")
     os.makedirs(CHART_DIR, exist_ok=True)
-    data = {"generated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-            "tickers": {}}
-    for ticker in TICKERS:
-        png = make_chart(ticker)
-        with open(os.path.join(CHART_DIR, f"{ticker}_zones.png"), "wb") as f:
-            f.write(png)
-        data["tickers"][ticker] = zone_json(ticker)
-        print(f"{ticker}: chart + zones written")
-    with open(os.path.join(OUTDIR, "zones.json"), "w") as f:
+
+    if args.tickers.strip():
+        tickers = [t.upper().strip() for t in args.tickers.split(",") if t.strip()]
+        # New tickers join the standing list so nightly refresh keeps them.
+        standing = load_ticker_list()
+        changed = False
+        for t in tickers:
+            if t not in standing:
+                standing.append(t)
+                changed = True
+        if changed:
+            save_ticker_list(standing)
+            print(f"tickers.json updated: {standing}")
+    else:
+        tickers = load_ticker_list()
+
+    # Merge into the existing zones.json; never drop tickers we are not
+    # regenerating in this run.
+    try:
+        with open(ZONES_FILE) as f:
+            data = json.load(f)
+        if not isinstance(data.get("tickers"), dict):
+            data["tickers"] = {}
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = {"tickers": {}}
+
+    ok = 0
+    for ticker in tickers:
+        try:
+            png = make_chart(ticker)
+            with open(os.path.join(CHART_DIR, f"{ticker}_zones.png"), "wb") as f:
+                f.write(png)
+            data["tickers"][ticker] = zone_json(ticker)
+            ok += 1
+            print(f"{ticker}: chart + zones written")
+        except Exception as exc:
+            print(f"{ticker}: skipped — {exc}", file=sys.stderr)
+
+    if not ok:
+        print("No tickers generated — check the ticker symbols.", file=sys.stderr)
+        sys.exit(1)
+
+    data["generated_at_utc"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    with open(ZONES_FILE, "w") as f:
         json.dump(data, f, indent=2)
     print(f"wrote docs/zones.json ({data['generated_at_utc']})")
 
