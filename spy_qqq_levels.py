@@ -1,0 +1,308 @@
+#!/usr/bin/env python3
+"""
+SPY / QQQ support & resistance zone analyzer.
+
+  * Daily chart  -> last 1 year of daily candles
+  * Weekly chart -> last 2 years of weekly candles
+  * Zones are found from swing highs/lows (pivots), clustered by price,
+    and drawn as light bands:
+        green = support    (zone below the current price)
+        red   = resistance (zone above the current price)
+  * SMA(21) blue, SMA(50) black, SMA(200) orange (daily only; weekly
+    uses weekly closes and skips the 200)
+  * One PNG per ticker (daily on top, weekly below). No text output.
+
+Usage:
+    pip install yfinance pandas numpy matplotlib
+    python spy_qqq_levels.py                     # SPY and QQQ
+    python spy_qqq_levels.py SPY QQQ IWM DIA     # up to 4 tickers
+    python spy_qqq_levels.py AAPL --no-show      # just save PNGs
+    python spy_qqq_levels.py --demo              # offline test with synthetic data
+"""
+
+import argparse
+import os
+import sys
+import warnings
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+
+# --------------------------------------------------------------------------
+# Settings per timeframe
+# --------------------------------------------------------------------------
+TIMEFRAMES = {
+    "Daily": {
+        "display_years": 1,   # what is shown on the chart (and used for zones)
+        "fetch_period": "2y", # extra history so SMA(200) is valid across the chart
+        "interval": "1d",
+        "pivot_window": 5,    # bars on each side that must be lower/higher
+        "max_zones": 6,
+        "smas": [21, 50, 200],
+    },
+    "Weekly": {
+        "display_years": 2,
+        "fetch_period": "3y", # extra history so SMA(50) is valid across the chart
+        "interval": "1wk",
+        "pivot_window": 3,
+        "max_zones": 6,
+        "smas": [21, 50],     # weekly 200 skipped (not enough data)
+    },
+}
+
+SMA_COLORS = {21: "#1F5BD8", 50: "#000000", 200: "#FF8C00"}   # blue, black, orange
+MAX_TICKERS = 4
+
+SUPPORT_COLOR = "#2E9E4F"     # medium green (support)
+RESIST_COLOR = "#FF6B6B"      # light red (resistance)
+ZONE_ALPHA = 0.35             # band fill opacity (raise for stronger bands)
+EDGE_ALPHA = 0.9              # opacity of the band's top/bottom border lines
+
+
+# --------------------------------------------------------------------------
+# Data
+# --------------------------------------------------------------------------
+def fetch_data(ticker: str, period: str, interval: str) -> pd.DataFrame:
+    import yfinance as yf
+    df = yf.Ticker(ticker).history(period=period, interval=interval, auto_adjust=False)
+    if df.empty:
+        raise RuntimeError(f"No data returned for {ticker} ({interval}).")
+    df = df[["Open", "High", "Low", "Close", "Volume"]].dropna()
+    df.index = pd.to_datetime(df.index).tz_localize(None)
+    return df
+
+
+def synthetic_data(ticker: str, period: str, interval: str) -> pd.DataFrame:
+    """Random-walk OHLC data so the script can be tested without internet."""
+    import zlib
+    weekly = interval == "1wk"
+    years = int(period.rstrip("y"))
+    n = years * (52 if weekly else 252)
+    freq = "W-FRI" if weekly else "B"
+    rng = np.random.default_rng(zlib.crc32(f"{ticker}{interval}".encode()))
+    start = 560.0 if ticker == "SPY" else 480.0
+    vol = 0.022 if weekly else 0.010
+    close = start * np.exp(np.cumsum(rng.normal(0.0006 * (5 if weekly else 1), vol, n)))
+    open_ = np.r_[close[0], close[:-1]] * (1 + rng.normal(0, vol / 4, n))
+    high = np.maximum(open_, close) * (1 + np.abs(rng.normal(0, vol / 2, n)))
+    low = np.minimum(open_, close) * (1 - np.abs(rng.normal(0, vol / 2, n)))
+    idx = pd.date_range(end=pd.Timestamp.today().normalize(), periods=n, freq=freq)
+    return pd.DataFrame({"Open": open_, "High": high, "Low": low,
+                         "Close": close, "Volume": 0}, index=idx)
+
+
+# --------------------------------------------------------------------------
+# Analysis
+# --------------------------------------------------------------------------
+def atr(df: pd.DataFrame, length: int = 14) -> float:
+    prev_close = df["Close"].shift(1)
+    tr = pd.concat([df["High"] - df["Low"],
+                    (df["High"] - prev_close).abs(),
+                    (df["Low"] - prev_close).abs()], axis=1).max(axis=1)
+    return float(tr.rolling(length).mean().iloc[-1])
+
+
+def find_pivots(df: pd.DataFrame, window: int):
+    """Return list of (date, price, 'H'|'L') swing points."""
+    highs, lows = df["High"].values, df["Low"].values
+    pivots = []
+    for i in range(window, len(df) - window):
+        if highs[i] == highs[i - window:i + window + 1].max():
+            pivots.append((df.index[i], highs[i], "H"))
+        if lows[i] == lows[i - window:i + window + 1].min():
+            pivots.append((df.index[i], lows[i], "L"))
+    return pivots
+
+
+def build_zones(df: pd.DataFrame, window: int, max_zones: int):
+    """Cluster pivot prices into zones and rank them."""
+    pivots = find_pivots(df, window)
+    if not pivots:
+        return []
+
+    a = atr(df)
+    tolerance = 0.6 * a          # pivots this close belong to the same zone
+    pad = 0.25 * a               # minimum half-thickness of a zone
+    last_close = float(df["Close"].iloc[-1])
+    last_date = df.index[-1]
+    span_days = max((last_date - df.index[0]).days, 1)
+
+    pivots.sort(key=lambda p: p[1])
+    clusters, current = [], [pivots[0]]
+    for p in pivots[1:]:
+        if p[1] - np.mean([q[1] for q in current]) <= tolerance:
+            current.append(p)
+        else:
+            clusters.append(current)
+            current = [p]
+    clusters.append(current)
+
+    # Merge clusters whose padded bands would overlap
+    merged = [clusters[0]]
+    for c in clusters[1:]:
+        prev_top = max(max(p[1] for p in merged[-1]), np.mean([p[1] for p in merged[-1]]) + pad)
+        this_bot = min(min(p[1] for p in c), np.mean([p[1] for p in c]) - pad)
+        if this_bot <= prev_top:
+            merged[-1] = merged[-1] + c
+        else:
+            merged.append(c)
+    clusters = merged
+
+    zones = []
+    for c in clusters:
+        prices = [p[1] for p in c]
+        mid = float(np.mean(prices))
+        low = min(min(prices), mid - pad)
+        high = max(max(prices), mid + pad)
+        touches = len(c)
+        # Recent touches count a bit more than old ones
+        recency = np.mean([1 - (last_date - p[0]).days / span_days for p in c])
+        score = touches + recency
+        if low <= last_close <= high:
+            kind = "Support" if mid <= last_close else "Resistance"
+            note = "price inside zone"
+        else:
+            kind = "Support" if high < last_close else "Resistance"
+            note = ""
+        zones.append({
+            "low": low, "high": high, "mid": mid, "touches": touches,
+            "score": score, "type": kind, "note": note,
+            "distance_pct": (mid - last_close) / last_close * 100,
+        })
+
+    # Keep the strongest zones, but make sure both sides of price are represented
+    zones.sort(key=lambda z: z["score"], reverse=True)
+    supports = [z for z in zones if z["type"] == "Support"]
+    resists = [z for z in zones if z["type"] == "Resistance"]
+    half = max_zones // 2
+    chosen = supports[:half] + resists[:half]
+    leftovers = [z for z in zones if z not in chosen]
+    chosen += leftovers[:max_zones - len(chosen)]
+    chosen.sort(key=lambda z: z["mid"], reverse=True)
+    return chosen
+
+
+# --------------------------------------------------------------------------
+# Plotting
+# --------------------------------------------------------------------------
+def draw_candles(ax, df: pd.DataFrame):
+    x = np.arange(len(df))
+    up = df["Close"] >= df["Open"]
+    colors = np.where(up, "#26A69A", "#EF5350")
+    ax.vlines(x, df["Low"], df["High"], color=colors, linewidth=0.8, zorder=3)
+    body_low = df[["Open", "Close"]].min(axis=1).values
+    body_h = (df["Close"] - df["Open"]).abs().values
+    min_h = (df["High"].max() - df["Low"].min()) * 0.0015
+    for xi, bl, bh, col in zip(x, body_low, body_h, colors):
+        ax.add_patch(Rectangle((xi - 0.35, bl), 0.7, max(bh, min_h),
+                               facecolor=col, edgecolor=col, zorder=4))
+    # Date labels
+    step = max(len(df) // 10, 1)
+    ax.set_xticks(x[::step])
+    ax.set_xticklabels([d.strftime("%b %y") for d in df.index[::step]],
+                       rotation=0, fontsize=8)
+    ax.set_xlim(-1, len(df) + 8)
+
+
+def draw_zones(ax, df: pd.DataFrame, zones):
+    n = len(df)
+    for z in zones:
+        color = SUPPORT_COLOR if z["type"] == "Support" else RESIST_COLOR
+        ax.axhspan(z["low"], z["high"], facecolor=color, alpha=ZONE_ALPHA,
+                   edgecolor="none", zorder=1)
+        for edge in (z["low"], z["high"]):
+            ax.axhline(edge, color=color, alpha=EDGE_ALPHA, linewidth=1.0, zorder=2)
+        ax.text(n + 0.5, z["mid"], f"{z['low']:.2f}–{z['high']:.2f} ({z['touches']}x)",
+                va="center", fontsize=7, color="#333333", zorder=5)
+
+
+def draw_smas(ax, df: pd.DataFrame, smas):
+    x = np.arange(len(df))
+    for length in smas:
+        col = f"SMA{length}"
+        if col in df and df[col].notna().any():
+            ax.plot(x, df[col].values, color=SMA_COLORS[length], linewidth=1.4,
+                    label=f"SMA({length})", zorder=6)
+
+
+def plot_timeframe(ax, ticker, tf_name, df, zones, smas):
+    draw_zones(ax, df, zones)
+    draw_candles(ax, df)
+    draw_smas(ax, df, smas)
+    ax.legend(loc="upper left", fontsize=8, framealpha=0.85)
+    last = df["Close"].iloc[-1]
+    ax.axhline(last, color="#555555", linestyle="--", linewidth=0.8, zorder=2)
+    ax.set_title(f"{ticker} – {tf_name}  |  last close {last:.2f}", fontsize=11, loc="left")
+    ax.grid(alpha=0.25)
+    ax.set_ylabel("Price")
+
+
+def prepare(df: pd.DataFrame, cfg) -> pd.DataFrame:
+    """Add SMAs on the full history, then trim to the display window."""
+    df = df.copy()
+    for length in cfg["smas"]:
+        df[f"SMA{length}"] = df["Close"].rolling(length).mean()
+    start = df.index[-1] - pd.DateOffset(years=cfg["display_years"])
+    return df[df.index > start]
+
+
+# --------------------------------------------------------------------------
+# Main
+# --------------------------------------------------------------------------
+def main():
+    parser = argparse.ArgumentParser(
+        description="Daily (1Y) and weekly (2Y) support/resistance zone charts with SMAs")
+    parser.add_argument("tickers", nargs="*", default=["SPY", "QQQ"],
+                        help=f"1 to {MAX_TICKERS} ticker symbols (default: SPY QQQ)")
+    parser.add_argument("--outdir", default="charts", help="folder for the PNG charts")
+    parser.add_argument("--no-show", action="store_true",
+                        help="only save the PNGs, don't open chart windows")
+    parser.add_argument("--demo", action="store_true", help="use synthetic data (no internet)")
+    args = parser.parse_args()
+
+    tickers = [t.upper() for t in args.tickers]
+    if len(tickers) > MAX_TICKERS:
+        parser.error(f"at most {MAX_TICKERS} tickers allowed (got {len(tickers)})")
+
+    warnings.filterwarnings("ignore")
+    if args.no_show:
+        plt.switch_backend("Agg")      # render off-screen only
+    os.makedirs(args.outdir, exist_ok=True)
+    loader = synthetic_data if args.demo else fetch_data
+
+    # 1) Download all data first, so nothing is drawn until everything is ready
+    data = {}
+    for ticker in tickers:
+        for tf_name, cfg in TIMEFRAMES.items():
+            try:
+                raw = loader(ticker, cfg["fetch_period"], cfg["interval"])
+            except Exception as exc:
+                sys.exit(f"Could not download {ticker} {tf_name} data: {exc}")
+            data[(ticker, tf_name)] = prepare(raw, cfg)
+
+    # 2) Draw and save one chart per ticker
+    for ticker in tickers:
+        fig, axes = plt.subplots(2, 1, figsize=(15, 11), num=f"{ticker} zones")
+        for ax, (tf_name, cfg) in zip(axes, TIMEFRAMES.items()):
+            df = data[(ticker, tf_name)]
+            zones = build_zones(df, cfg["pivot_window"], cfg["max_zones"])
+            plot_timeframe(ax, ticker, tf_name, df, zones, cfg["smas"])
+
+        handles = [Rectangle((0, 0), 1, 1, color=SUPPORT_COLOR, alpha=0.6),
+                   Rectangle((0, 0), 1, 1, color=RESIST_COLOR, alpha=0.6)]
+        fig.legend(handles, ["Support zone", "Resistance zone"],
+                   loc="upper right", fontsize=9)
+        fig.suptitle(f"{ticker} – Daily (1Y) & Weekly (2Y) Key Zones", fontsize=14)
+        fig.tight_layout(rect=(0, 0, 1, 0.96))
+        fig.savefig(os.path.join(args.outdir, f"{ticker}_zones.png"), dpi=130)
+
+    # 3) Show all chart windows; the program ends when you close them
+    if not args.no_show:
+        plt.show()
+
+
+
+if __name__ == "__main__":
+    main()
