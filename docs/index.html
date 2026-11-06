@@ -46,7 +46,7 @@
 <body>
 <div class="wrap">
   <h1>Demand / supply levels</h1>
-  <p class="sub">Daily (1Y), weekly (5Y) and monthly (10Y) support and resistance zones with SMA 21 / 50 / 200.</p>
+  <p class="sub">Daily (1Y), weekly (5Y) and monthly (10Y) support and resistance zones with EMA 20 / 50 / 200.</p>
 
   <div class="add">
     <input id="ticker-input" type="text" placeholder="Enter ticker, e.g. NVDA" maxlength="12"
@@ -72,19 +72,19 @@
     <div class="card">
       <h2>Daily zones · 1Y</h2>
       <p class="meta" id="daily-meta"></p>
-      <table><thead><tr><th>Type</th><th>Zone</th><th>Touches</th><th>vs last close</th></tr></thead>
+      <table><thead><tr><th>Type</th><th>Zone</th><th>Touches</th><th>vs last close</th><th>Formation</th></tr></thead>
       <tbody id="daily-body"></tbody></table>
     </div>
     <div class="card">
       <h2>Weekly zones · 5Y</h2>
       <p class="meta" id="weekly-meta"></p>
-      <table><thead><tr><th>Type</th><th>Zone</th><th>Touches</th><th>vs last close</th></tr></thead>
+      <table><thead><tr><th>Type</th><th>Zone</th><th>Touches</th><th>vs last close</th><th>Formation</th></tr></thead>
       <tbody id="weekly-body"></tbody></table>
     </div>
     <div class="card">
       <h2>Monthly zones · 10Y</h2>
       <p class="meta" id="monthly-meta"></p>
-      <table><thead><tr><th>Type</th><th>Zone</th><th>Touches</th><th>vs last close</th></tr></thead>
+      <table><thead><tr><th>Type</th><th>Zone</th><th>Touches</th><th>vs last close</th><th>Formation</th></tr></thead>
       <tbody id="monthly-body"></tbody></table>
     </div>
   </div>
@@ -121,8 +121,9 @@ function zoneRow(z) {
     : '<span class="pill res">Resistance</span>';
   const dist = (z.distance_pct > 0 ? "+" : "") + z.distance_pct.toFixed(2) + "%";
   const note = z.note ? " · " + z.note : "";
+  const form = z.formation ? z.formation : "—";
   return "<tr><td>" + pill + "</td><td>" + z.low.toFixed(2) + " – " + z.high.toFixed(2) + note +
-    "</td><td>" + z.touches + "x</td><td>" + dist + "</td></tr>";
+    "</td><td>" + z.touches + "x</td><td>" + dist + "</td><td>" + form + "</td></tr>";
 }
 
 function renderTabs() {
@@ -161,9 +162,9 @@ function show(ticker) {
     document.getElementById("daily-meta").textContent = "";
     document.getElementById("weekly-meta").textContent = "";
     document.getElementById("monthly-meta").textContent = "";
-    document.getElementById("daily-body").innerHTML = '<tr><td colspan="4">Zones not generated yet</td></tr>';
-    document.getElementById("weekly-body").innerHTML = '<tr><td colspan="4">Zones not generated yet</td></tr>';
-    document.getElementById("monthly-body").innerHTML = '<tr><td colspan="4">Zones not generated yet</td></tr>';
+    document.getElementById("daily-body").innerHTML = '<tr><td colspan="5">Zones not generated yet</td></tr>';
+    document.getElementById("weekly-body").innerHTML = '<tr><td colspan="5">Zones not generated yet</td></tr>';
+    document.getElementById("monthly-body").innerHTML = '<tr><td colspan="5">Zones not generated yet</td></tr>';
     return;
   }
   notice.hidden = true;
@@ -178,9 +179,9 @@ function show(ticker) {
   document.getElementById("daily-meta").textContent = "Last close " + d.last_close.toFixed(2) + " · as of " + d.as_of;
   document.getElementById("weekly-meta").textContent = "Last close " + w.last_close.toFixed(2) + " · as of " + w.as_of;
   document.getElementById("monthly-meta").textContent = "Last close " + m.last_close.toFixed(2) + " · as of " + m.as_of;
-  document.getElementById("daily-body").innerHTML = d.zones.map(zoneRow).join("") || '<tr><td colspan="4">No zones</td></tr>';
-  document.getElementById("weekly-body").innerHTML = w.zones.map(zoneRow).join("") || '<tr><td colspan="4">No zones</td></tr>';
-  document.getElementById("monthly-body").innerHTML = m.zones.map(zoneRow).join("") || '<tr><td colspan="4">No zones</td></tr>';
+  document.getElementById("daily-body").innerHTML = d.zones.map(zoneRow).join("") || '<tr><td colspan="5">No zones</td></tr>';
+  document.getElementById("weekly-body").innerHTML = w.zones.map(zoneRow).join("") || '<tr><td colspan="5">No zones</td></tr>';
+  document.getElementById("monthly-body").innerHTML = m.zones.map(zoneRow).join("") || '<tr><td colspan="5">No zones</td></tr>';
 }
 
 function addTicker(raw) {

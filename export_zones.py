@@ -62,7 +62,7 @@ def make_chart(ticker: str) -> bytes:
     for ax, (tf_name, cfg) in zip(axes, lv.TIMEFRAMES.items()):
         df = lv.prepare(lv.fetch_data(ticker, cfg["fetch_period"], cfg["interval"]), cfg)
         zones = lv.build_zones(df, cfg["pivot_window"], cfg["max_zones"])
-        lv.plot_timeframe(ax, ticker, tf_name, df, zones, cfg["smas"])
+        lv.plot_timeframe(ax, ticker, tf_name, df, zones, cfg["emas"])
     handles = [Rectangle((0, 0), 1, 1, color=lv.SUPPORT_COLOR, alpha=0.6),
                Rectangle((0, 0), 1, 1, color=lv.RESIST_COLOR, alpha=0.6)]
     fig.legend(handles, ["Support zone", "Resistance zone"], loc="upper right", fontsize=9)
@@ -90,6 +90,7 @@ def zone_json(ticker: str) -> dict:
                     "touches": z["touches"],
                     "distance_pct": round(z["distance_pct"], 2),
                     "note": z["note"],
+                    "formation": z.get("formation", ""),
                 }
                 for z in zones
             ],

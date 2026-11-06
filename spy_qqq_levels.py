@@ -9,8 +9,7 @@ SPY / QQQ support & resistance zone analyzer.
     and drawn as light bands:
         green = support    (zone below the current price)
         red   = resistance (zone above the current price)
-  * SMA(21) blue, SMA(50) black, SMA(200) orange (daily only; weekly and
-    monthly use 21 / 50)
+  * EMA(20) blue, EMA(50) black, EMA(200) orange
   * One PNG per ticker (daily on top, weekly in the middle, monthly below).
     No text output.
 
@@ -38,31 +37,31 @@ from matplotlib.patches import Rectangle
 TIMEFRAMES = {
     "Daily": {
         "display_years": 1,   # what is shown on the chart (and used for zones)
-        "fetch_period": "2y", # extra history so SMA(200) is valid across the chart
+        "fetch_period": "2y", # extra history so EMA(200) is valid across the chart
         "interval": "1d",
         "pivot_window": 5,    # bars on each side that must be lower/higher
         "max_zones": 6,
-        "smas": [21, 50, 200],
+        "emas": [20, 50, 200],
     },
     "Weekly": {
         "display_years": 5,
-        "fetch_period": "6y", # extra history so SMA(50) is valid across the chart
+        "fetch_period": "6y", # extra history so EMA(50) is valid across the chart
         "interval": "1wk",
         "pivot_window": 3,
         "max_zones": 6,
-        "smas": [21, 50],
+        "emas": [20, 50, 200],
     },
     "Monthly": {
         "display_years": 10,
-        "fetch_period": "15y", # extra history so SMA(50) is valid across the chart
+        "fetch_period": "15y", # extra history so EMA(50) is valid across the chart
         "interval": "1mo",
         "pivot_window": 3,
         "max_zones": 6,
-        "smas": [21, 50],
+        "emas": [20, 50, 200],
     },
 }
 
-SMA_COLORS = {21: "#1F5BD8", 50: "#000000", 200: "#FF8C00"}   # blue, black, orange
+EMA_COLORS = {20: "#1F5BD8", 50: "#000000", 200: "#FF8C00"}   # blue, black, orange
 MAX_TICKERS = 4
 
 SUPPORT_COLOR = "#2E9E4F"     # medium green (support)
@@ -126,6 +125,80 @@ def find_pivots(df: pd.DataFrame, window: int):
     return pivots
 
 
+def find_rbr_dbr_zones(df, max_zones):
+    """Demand zones formed by a tight base + a long green rally candle.
+
+    Rule (applied on every timeframe):
+      * Base: 1 to 3 consecutive candles, tight — each candle's range
+        <= 1.0 * ATR and the whole base's high-low span <= 1.5 * ATR.
+      * Rally: the very next candle is long and green — body >= 0.5 * ATR
+        and its close breaks above the base high. That candle is the rally.
+      * Formation: the move into the base decides the label —
+        RBR (rally-base-rally) when the 1-3 candles before the base
+        moved up >= 0.5 * ATR, DBR (drop-base-rally) when they moved
+        down <= -0.5 * ATR. Anything else is not an RBR/DBR zone.
+    The zone is the base's low-to-high range (padded by 0.25 * ATR).
+    Touches count later bars that entered the zone after the rally.
+    """
+    a = atr(df)
+    pad = 0.25 * a
+    n = len(df)
+    last_close = float(df["Close"].iloc[-1])
+    last_date = df.index[-1]
+    span_days = max((last_date - df.index[0]).days, 1)
+    found = []
+    for base_start in range(2, n - 1):
+        for base_len in (1, 2, 3):
+            base_end = base_start + base_len - 1
+            rally_idx = base_end + 1
+            if rally_idx >= n:
+                continue
+            base = df.iloc[base_start:base_end + 1]
+            base_low = float(base["Low"].min())
+            base_high = float(base["High"].max())
+            if base_high - base_low > 1.5 * a:
+                continue
+            if (base["High"] - base["Low"]).max() > 1.0 * a:
+                continue
+            r = df.iloc[rally_idx]
+            body = float(r["Close"] - r["Open"])
+            if body < 0.5 * a or float(r["Close"]) <= base_high:
+                continue
+            pre = df.iloc[max(0, base_start - 3):base_start]
+            if len(pre) == 0:
+                continue
+            move = float(pre["Close"].iloc[-1] - pre["Open"].iloc[0])
+            if move >= 0.5 * a:
+                formation = "RBR"
+            elif move <= -0.5 * a:
+                formation = "DBR"
+            else:
+                continue
+            mid = (base_low + base_high) / 2
+            low = min(base_low, mid - pad)
+            high = max(base_high, mid + pad)
+            touches = int(((df["Low"].iloc[rally_idx + 1:] <= high) &
+                           (df["High"].iloc[rally_idx + 1:] >= low)).sum())
+            recency = 1 - (last_date - df.index[rally_idx]).days / span_days
+            score = body / a + 0.5 * touches + recency
+            found.append({
+                "low": low, "high": high, "mid": mid, "touches": touches,
+                "score": score, "type": "Support", "note": "",
+                "distance_pct": (mid - last_close) / last_close * 100,
+                "formation": formation,
+            })
+    # De-duplicate overlapping bases: keep the strongest per price area.
+    found.sort(key=lambda z: z["score"], reverse=True)
+    kept = []
+    for z in found:
+        if all(abs(z["mid"] - k["mid"]) > 0.6 * a for k in kept):
+            kept.append(z)
+        if len(kept) >= max_zones:
+            break
+    kept.sort(key=lambda z: z["mid"], reverse=True)
+    return kept
+
+
 def build_zones(df: pd.DataFrame, window: int, max_zones: int):
     """Cluster pivot prices into zones and rank them."""
     pivots = find_pivots(df, window)
@@ -180,15 +253,23 @@ def build_zones(df: pd.DataFrame, window: int, max_zones: int):
             "low": low, "high": high, "mid": mid, "touches": touches,
             "score": score, "type": kind, "note": note,
             "distance_pct": (mid - last_close) / last_close * 100,
+            "formation": "",
         })
 
-    # Keep the strongest zones, but make sure both sides of price are represented
+    # Demand zones follow the RBR/DBR rule: a tight base (max 3 candles)
+    # then a long green rally candle. Those zones lead the Support side;
+    # pivot-cluster zones fill any remaining Support slots.
+    rbr_dbr = find_rbr_dbr_zones(df, max_zones)
     zones.sort(key=lambda z: z["score"], reverse=True)
-    supports = [z for z in zones if z["type"] == "Support"]
+    pivot_supports = [z for z in zones if z["type"] == "Support"]
     resists = [z for z in zones if z["type"] == "Resistance"]
     half = max_zones // 2
+    supports = rbr_dbr + [z for z in pivot_supports
+                          if all(abs(z["mid"] - k["mid"]) > 0.6 * atr(df)
+                                 for k in rbr_dbr)]
     chosen = supports[:half] + resists[:half]
     leftovers = [z for z in zones if z not in chosen]
+    leftovers += [z for z in rbr_dbr if z not in chosen]
     chosen += leftovers[:max_zones - len(chosen)]
     chosen.sort(key=lambda z: z["mid"], reverse=True)
     return chosen
@@ -224,23 +305,24 @@ def draw_zones(ax, df: pd.DataFrame, zones):
                    edgecolor="none", zorder=1)
         for edge in (z["low"], z["high"]):
             ax.axhline(edge, color=color, alpha=EDGE_ALPHA, linewidth=1.0, zorder=2)
-        ax.text(n + 0.5, z["mid"], f"{z['low']:.2f}–{z['high']:.2f} ({z['touches']}x)",
+        ax.text(n + 0.5, z["mid"], f"{z['low']:.2f}–{z['high']:.2f} ({z['touches']}x)"
+                + (f" {z['formation']}" if z.get("formation") else ""),
                 va="center", fontsize=7, color="#333333", zorder=5)
 
 
-def draw_smas(ax, df: pd.DataFrame, smas):
+def draw_emas(ax, df: pd.DataFrame, emas):
     x = np.arange(len(df))
-    for length in smas:
-        col = f"SMA{length}"
+    for length in emas:
+        col = f"EMA{length}"
         if col in df and df[col].notna().any():
-            ax.plot(x, df[col].values, color=SMA_COLORS[length], linewidth=1.4,
-                    label=f"SMA({length})", zorder=6)
+            ax.plot(x, df[col].values, color=EMA_COLORS[length], linewidth=1.4,
+                    label=f"EMA({length})", zorder=6)
 
 
-def plot_timeframe(ax, ticker, tf_name, df, zones, smas):
+def plot_timeframe(ax, ticker, tf_name, df, zones, emas):
     draw_zones(ax, df, zones)
     draw_candles(ax, df)
-    draw_smas(ax, df, smas)
+    draw_emas(ax, df, emas)
     ax.legend(loc="upper left", fontsize=8, framealpha=0.85)
     last = df["Close"].iloc[-1]
     ax.axhline(last, color="#555555", linestyle="--", linewidth=0.8, zorder=2)
@@ -250,10 +332,10 @@ def plot_timeframe(ax, ticker, tf_name, df, zones, smas):
 
 
 def prepare(df: pd.DataFrame, cfg) -> pd.DataFrame:
-    """Add SMAs on the full history, then trim to the display window."""
+    """Add EMAs on the full history, then trim to the display window."""
     df = df.copy()
-    for length in cfg["smas"]:
-        df[f"SMA{length}"] = df["Close"].rolling(length).mean()
+    for length in cfg["emas"]:
+        df[f"EMA{length}"] = df["Close"].ewm(span=length, adjust=False).mean()
     start = df.index[-1] - pd.DateOffset(years=cfg["display_years"])
     return df[df.index > start]
 
@@ -263,7 +345,7 @@ def prepare(df: pd.DataFrame, cfg) -> pd.DataFrame:
 # --------------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser(
-        description="Daily (1Y) and weekly (2Y) support/resistance zone charts with SMAs")
+        description="Daily (1Y), weekly (5Y) and monthly (10Y) support/resistance zone charts with EMAs")
     parser.add_argument("tickers", nargs="*", default=["SPY", "QQQ"],
                         help=f"1 to {MAX_TICKERS} ticker symbols (default: SPY QQQ)")
     parser.add_argument("--outdir", default="charts", help="folder for the PNG charts")
@@ -298,7 +380,7 @@ def main():
         for ax, (tf_name, cfg) in zip(axes, TIMEFRAMES.items()):
             df = data[(ticker, tf_name)]
             zones = build_zones(df, cfg["pivot_window"], cfg["max_zones"])
-            plot_timeframe(ax, ticker, tf_name, df, zones, cfg["smas"])
+            plot_timeframe(ax, ticker, tf_name, df, zones, cfg["emas"])
 
         handles = [Rectangle((0, 0), 1, 1, color=SUPPORT_COLOR, alpha=0.6),
                    Rectangle((0, 0), 1, 1, color=RESIST_COLOR, alpha=0.6)]
