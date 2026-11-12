@@ -1,17 +1,17 @@
 {
-  "generated_at_utc": "2026-11-11T01:43:31+00:00",
+  "generated_at_utc": "2026-11-12T02:43:16+00:00",
   "tickers": {
     "SPY": {
       "Daily": {
-        "last_close": 749.92,
-        "as_of": "2026-11-10",
+        "last_close": 759.81,
+        "as_of": "2026-11-11",
         "zones": [
           {
             "type": "Resistance",
-            "low": 774.63,
+            "low": 774.28,
             "high": 781.62,
-            "touches": 5,
-            "distance_pct": 3.7,
+            "touches": 6,
+            "distance_pct": 2.3,
             "note": "",
             "formation": ""
           },
@@ -19,17 +19,17 @@
             "type": "Support",
             "low": 749.6,
             "high": 763.57,
-            "touches": 15,
-            "distance_pct": 0.89,
+            "touches": 16,
+            "distance_pct": -0.42,
             "note": "",
             "formation": "DBR"
           },
           {
-            "type": "Resistance",
+            "type": "Support",
             "low": 749.53,
             "high": 762.04,
             "touches": 8,
-            "distance_pct": 0.88,
+            "distance_pct": -0.43,
             "note": "price inside zone",
             "formation": ""
           },
@@ -38,7 +38,7 @@
             "low": 734.59,
             "high": 748.9,
             "touches": 4,
-            "distance_pct": -1.09,
+            "distance_pct": -2.38,
             "note": "",
             "formation": "DBR"
           },
@@ -47,7 +47,7 @@
             "low": 689.25,
             "high": 697.84,
             "touches": 7,
-            "distance_pct": -7.39,
+            "distance_pct": -8.59,
             "note": "",
             "formation": ""
           },
@@ -56,74 +56,74 @@
             "low": 675.78,
             "high": 689.15,
             "touches": 17,
-            "distance_pct": -8.99,
+            "distance_pct": -10.18,
             "note": "",
             "formation": "DBR"
           }
         ]
       },
       "Weekly": {
-        "last_close": 749.92,
+        "last_close": 759.81,
         "as_of": "2026-11-09",
         "zones": [
           {
             "type": "Resistance",
-            "low": 776.19,
-            "high": 784.79,
+            "low": 776.07,
+            "high": 784.92,
             "touches": 2,
-            "distance_pct": 4.08,
+            "distance_pct": 2.72,
             "note": "",
             "formation": ""
           },
           {
             "type": "Resistance",
-            "low": 756.1,
-            "high": 764.7,
+            "low": 755.97,
+            "high": 764.83,
             "touches": 1,
-            "distance_pct": 1.4,
-            "note": "",
+            "distance_pct": 0.08,
+            "note": "price inside zone",
             "formation": ""
-          },
-          {
-            "type": "Support",
-            "low": 653.17,
-            "high": 670.23,
-            "touches": 10,
-            "distance_pct": -11.76,
-            "note": "",
-            "formation": "DBR"
           },
           {
             "type": "Support",
             "low": 568.44,
             "high": 586.12,
             "touches": 16,
-            "distance_pct": -23.02,
+            "distance_pct": -24.02,
             "note": "",
             "formation": "RBR"
           },
           {
             "type": "Support",
-            "low": 541.61,
-            "high": 550.28,
+            "low": 541.52,
+            "high": 550.37,
             "touches": 12,
-            "distance_pct": -27.2,
+            "distance_pct": -28.15,
             "note": "",
             "formation": "RBR"
+          },
+          {
+            "type": "Support",
+            "low": 448.92,
+            "high": 466.56,
+            "touches": 25,
+            "distance_pct": -39.76,
+            "note": "",
+            "formation": "DBR"
           },
           {
             "type": "Support",
             "low": 403.74,
             "high": 420.76,
             "touches": 7,
-            "distance_pct": -44.94,
+            "distance_pct": -45.65,
             "note": "",
             "formation": ""
           }
         ]
       },
       "Monthly": {
-        "last_close": 749.92,
+        "last_close": 759.81,
         "as_of": "2026-11-01",
         "zones": [
           {
@@ -131,7 +131,7 @@
             "low": 615.52,
             "high": 667.34,
             "touches": 3,
-            "distance_pct": -14.47,
+            "distance_pct": -15.58,
             "note": "",
             "formation": "RBR"
           },
@@ -140,7 +140,7 @@
             "low": 612.07,
             "high": 630.44,
             "touches": 2,
-            "distance_pct": -17.16,
+            "distance_pct": -18.24,
             "note": "",
             "formation": ""
           },
@@ -149,7 +149,7 @@
             "low": 539.44,
             "high": 586.12,
             "touches": 7,
-            "distance_pct": -24.95,
+            "distance_pct": -25.93,
             "note": "",
             "formation": "RBR"
           },
@@ -158,7 +158,7 @@
             "low": 483.8,
             "high": 524.61,
             "touches": 3,
-            "distance_pct": -32.77,
+            "distance_pct": -33.64,
             "note": "",
             "formation": "RBR"
           },
@@ -167,7 +167,7 @@
             "low": 459.44,
             "high": 482.93,
             "touches": 3,
-            "distance_pct": -36.83,
+            "distance_pct": -37.65,
             "note": "",
             "formation": ""
           },
@@ -176,7 +176,7 @@
             "low": 334.41,
             "high": 352.78,
             "touches": 2,
-            "distance_pct": -54.18,
+            "distance_pct": -54.78,
             "note": "",
             "formation": ""
           }
@@ -185,24 +185,24 @@
     },
     "QQQ": {
       "Daily": {
-        "last_close": 674.76,
-        "as_of": "2026-11-10",
+        "last_close": 690.38,
+        "as_of": "2026-11-11",
         "zones": [
           {
             "type": "Resistance",
             "low": 737.62,
-            "high": 749.49,
+            "high": 749.44,
             "touches": 4,
-            "distance_pct": 10.41,
+            "distance_pct": 7.91,
             "note": "",
             "formation": ""
           },
           {
             "type": "Resistance",
-            "low": 721.77,
+            "low": 721.81,
             "high": 734.58,
             "touches": 5,
-            "distance_pct": 7.63,
+            "distance_pct": 5.19,
             "note": "",
             "formation": ""
           },
@@ -211,7 +211,7 @@
             "low": 700.0,
             "high": 721.73,
             "touches": 12,
-            "distance_pct": 5.35,
+            "distance_pct": 2.97,
             "note": "",
             "formation": "DBR"
           },
@@ -220,16 +220,16 @@
             "low": 686.37,
             "high": 704.66,
             "touches": 7,
-            "distance_pct": 3.59,
-            "note": "",
+            "distance_pct": 1.24,
+            "note": "price inside zone",
             "formation": ""
           },
           {
             "type": "Support",
             "low": 686.48,
             "high": 701.24,
-            "touches": 20,
-            "distance_pct": 2.83,
+            "touches": 21,
+            "distance_pct": 0.5,
             "note": "",
             "formation": "RBR"
           },
@@ -238,41 +238,41 @@
             "low": 653.99,
             "high": 664.52,
             "touches": 0,
-            "distance_pct": -2.3,
+            "distance_pct": -4.51,
             "note": "",
             "formation": "DBR"
           }
         ]
       },
       "Weekly": {
-        "last_close": 674.76,
+        "last_close": 690.38,
         "as_of": "2026-11-09",
         "zones": [
           {
             "type": "Resistance",
-            "low": 756.0,
-            "high": 769.72,
+            "low": 755.77,
+            "high": 769.95,
             "touches": 1,
-            "distance_pct": 13.06,
+            "distance_pct": 10.5,
             "note": "",
             "formation": ""
           },
           {
             "type": "Resistance",
-            "low": 734.58,
-            "high": 748.65,
+            "low": 734.52,
+            "high": 748.71,
             "touches": 2,
-            "distance_pct": 9.91,
+            "distance_pct": 7.42,
             "note": "",
             "formation": ""
           },
           {
             "type": "Resistance",
-            "low": 686.33,
-            "high": 700.04,
+            "low": 686.09,
+            "high": 700.28,
             "touches": 2,
-            "distance_pct": 2.73,
-            "note": "",
+            "distance_pct": 0.41,
+            "note": "price inside zone",
             "formation": ""
           },
           {
@@ -280,7 +280,7 @@
             "low": 642.21,
             "high": 675.97,
             "touches": 3,
-            "distance_pct": -2.32,
+            "distance_pct": -4.53,
             "note": "",
             "formation": "RBR"
           },
@@ -289,23 +289,23 @@
             "low": 494.49,
             "high": 515.58,
             "touches": 11,
-            "distance_pct": -25.15,
+            "distance_pct": -26.85,
             "note": "",
             "formation": "RBR"
           },
           {
             "type": "Support",
-            "low": 473.65,
-            "high": 487.37,
-            "touches": 21,
-            "distance_pct": -28.79,
+            "low": 473.42,
+            "high": 487.6,
+            "touches": 22,
+            "distance_pct": -30.4,
             "note": "",
             "formation": "RBR"
           }
         ]
       },
       "Monthly": {
-        "last_close": 674.76,
+        "last_close": 690.38,
         "as_of": "2026-11-01",
         "zones": [
           {
@@ -313,7 +313,7 @@
             "low": 734.45,
             "high": 762.85,
             "touches": 1,
-            "distance_pct": 10.95,
+            "distance_pct": 8.44,
             "note": "",
             "formation": ""
           },
@@ -322,7 +322,7 @@
             "low": 544.66,
             "high": 602.87,
             "touches": 5,
-            "distance_pct": -14.97,
+            "distance_pct": -16.89,
             "note": "",
             "formation": "RBR"
           },
@@ -331,7 +331,7 @@
             "low": 476.78,
             "high": 526.48,
             "touches": 0,
-            "distance_pct": -25.66,
+            "distance_pct": -27.34,
             "note": "",
             "formation": "DBR"
           },
@@ -340,7 +340,7 @@
             "low": 385.49,
             "high": 413.89,
             "touches": 3,
-            "distance_pct": -40.77,
+            "distance_pct": -42.11,
             "note": "",
             "formation": ""
           },
@@ -349,7 +349,7 @@
             "low": 342.35,
             "high": 383.56,
             "touches": 1,
-            "distance_pct": -46.21,
+            "distance_pct": -47.43,
             "note": "",
             "formation": "RBR"
           },
@@ -358,7 +358,7 @@
             "low": 143.46,
             "high": 187.53,
             "touches": 5,
-            "distance_pct": -75.83,
+            "distance_pct": -76.38,
             "note": "",
             "formation": ""
           }
@@ -367,24 +367,24 @@
     },
     "IWM": {
       "Daily": {
-        "last_close": 280.58,
-        "as_of": "2026-11-10",
+        "last_close": 283.09,
+        "as_of": "2026-11-11",
         "zones": [
           {
             "type": "Resistance",
             "low": 300.25,
             "high": 302.86,
             "touches": 2,
-            "distance_pct": 7.48,
+            "distance_pct": 6.52,
             "note": "",
             "formation": ""
           },
           {
             "type": "Resistance",
-            "low": 295.74,
-            "high": 298.34,
-            "touches": 1,
-            "distance_pct": 5.87,
+            "low": 290.47,
+            "high": 293.09,
+            "touches": 2,
+            "distance_pct": 3.07,
             "note": "",
             "formation": ""
           },
@@ -393,16 +393,16 @@
             "low": 286.27,
             "high": 291.41,
             "touches": 28,
-            "distance_pct": 2.94,
+            "distance_pct": 2.03,
             "note": "",
             "formation": "RBR"
           },
           {
             "type": "Resistance",
             "low": 284.64,
-            "high": 290.68,
+            "high": 289.97,
             "touches": 6,
-            "distance_pct": 2.74,
+            "distance_pct": 1.57,
             "note": "",
             "formation": ""
           },
@@ -411,7 +411,7 @@
             "low": 270.36,
             "high": 274.38,
             "touches": 11,
-            "distance_pct": -2.93,
+            "distance_pct": -3.79,
             "note": "",
             "formation": "DBR"
           },
@@ -420,14 +420,14 @@
             "low": 261.06,
             "high": 267.22,
             "touches": 33,
-            "distance_pct": -5.86,
+            "distance_pct": -6.69,
             "note": "",
             "formation": "RBR"
           }
         ]
       },
       "Weekly": {
-        "last_close": 280.58,
+        "last_close": 283.09,
         "as_of": "2026-11-09",
         "zones": [
           {
@@ -435,7 +435,7 @@
             "low": 301.75,
             "high": 306.15,
             "touches": 2,
-            "distance_pct": 8.33,
+            "distance_pct": 7.37,
             "note": "",
             "formation": ""
           },
@@ -444,7 +444,7 @@
             "low": 285.63,
             "high": 290.03,
             "touches": 1,
-            "distance_pct": 2.58,
+            "distance_pct": 1.67,
             "note": "",
             "formation": ""
           },
@@ -453,7 +453,7 @@
             "low": 245.86,
             "high": 255.12,
             "touches": 7,
-            "distance_pct": -10.72,
+            "distance_pct": -11.52,
             "note": "",
             "formation": "RBR"
           },
@@ -462,7 +462,7 @@
             "low": 232.36,
             "high": 237.02,
             "touches": 6,
-            "distance_pct": -16.36,
+            "distance_pct": -17.1,
             "note": "",
             "formation": "RBR"
           },
@@ -471,7 +471,7 @@
             "low": 217.37,
             "high": 225.69,
             "touches": 19,
-            "distance_pct": -21.05,
+            "distance_pct": -21.75,
             "note": "",
             "formation": "RBR"
           },
@@ -480,14 +480,14 @@
             "low": 204.21,
             "high": 214.6,
             "touches": 9,
-            "distance_pct": -25.03,
+            "distance_pct": -25.69,
             "note": "",
             "formation": ""
           }
         ]
       },
       "Monthly": {
-        "last_close": 280.58,
+        "last_close": 283.09,
         "as_of": "2026-11-01",
         "zones": [
           {
@@ -495,7 +495,7 @@
             "low": 300.3,
             "high": 310.06,
             "touches": 1,
-            "distance_pct": 8.77,
+            "distance_pct": 7.8,
             "note": "",
             "formation": ""
           },
@@ -504,7 +504,7 @@
             "low": 245.12,
             "high": 258.2,
             "touches": 3,
-            "distance_pct": -10.31,
+            "distance_pct": -11.1,
             "note": "",
             "formation": "RBR"
           },
@@ -513,7 +513,7 @@
             "low": 228.63,
             "high": 244.98,
             "touches": 5,
-            "distance_pct": -15.08,
+            "distance_pct": -15.84,
             "note": "",
             "formation": ""
           },
@@ -522,7 +522,7 @@
             "low": 214.6,
             "high": 227.17,
             "touches": 7,
-            "distance_pct": -21.28,
+            "distance_pct": -21.97,
             "note": "",
             "formation": "RBR"
           },
@@ -531,7 +531,7 @@
             "low": 191.34,
             "high": 210.8,
             "touches": 6,
-            "distance_pct": -28.34,
+            "distance_pct": -28.97,
             "note": "",
             "formation": "RBR"
           },
@@ -540,7 +540,7 @@
             "low": 160.63,
             "high": 173.39,
             "touches": 9,
-            "distance_pct": -40.92,
+            "distance_pct": -41.45,
             "note": "",
             "formation": ""
           }
@@ -549,33 +549,33 @@
     },
     "DIA": {
       "Daily": {
-        "last_close": 521.73,
-        "as_of": "2026-11-10",
+        "last_close": 524.44,
+        "as_of": "2026-11-11",
         "zones": [
           {
             "type": "Resistance",
-            "low": 544.82,
-            "high": 548.68,
+            "low": 544.81,
+            "high": 548.69,
             "touches": 1,
-            "distance_pct": 4.8,
+            "distance_pct": 4.25,
             "note": "",
             "formation": ""
           },
           {
             "type": "Resistance",
-            "low": 535.8,
-            "high": 539.66,
+            "low": 535.79,
+            "high": 539.67,
             "touches": 1,
-            "distance_pct": 3.07,
+            "distance_pct": 2.53,
             "note": "",
             "formation": ""
           },
           {
             "type": "Resistance",
-            "low": 525.93,
-            "high": 529.79,
+            "low": 525.92,
+            "high": 529.8,
             "touches": 3,
-            "distance_pct": 1.17,
+            "distance_pct": 0.65,
             "note": "",
             "formation": ""
           },
@@ -583,17 +583,17 @@
             "type": "Support",
             "low": 515.19,
             "high": 523.68,
-            "touches": 4,
-            "distance_pct": -0.44,
+            "touches": 5,
+            "distance_pct": -0.95,
             "note": "",
             "formation": "DBR"
           },
           {
             "type": "Support",
-            "low": 508.16,
-            "high": 512.03,
+            "low": 508.15,
+            "high": 512.04,
             "touches": 17,
-            "distance_pct": -2.23,
+            "distance_pct": -2.74,
             "note": "",
             "formation": "RBR"
           },
@@ -602,14 +602,14 @@
             "low": 488.23,
             "high": 493.44,
             "touches": 26,
-            "distance_pct": -5.92,
+            "distance_pct": -6.41,
             "note": "",
             "formation": "RBR"
           }
         ]
       },
       "Weekly": {
-        "last_close": 521.73,
+        "last_close": 524.44,
         "as_of": "2026-11-09",
         "zones": [
           {
@@ -617,7 +617,7 @@
             "low": 543.72,
             "high": 549.78,
             "touches": 1,
-            "distance_pct": 4.8,
+            "distance_pct": 4.25,
             "note": "",
             "formation": ""
           },
@@ -626,7 +626,7 @@
             "low": 529.51,
             "high": 535.57,
             "touches": 1,
-            "distance_pct": 2.07,
+            "distance_pct": 1.54,
             "note": "",
             "formation": ""
           },
@@ -635,7 +635,7 @@
             "low": 484.25,
             "high": 496.34,
             "touches": 10,
-            "distance_pct": -6.03,
+            "distance_pct": -6.51,
             "note": "",
             "formation": "RBR"
           },
@@ -644,7 +644,7 @@
             "low": 478.38,
             "high": 487.62,
             "touches": 9,
-            "distance_pct": -7.42,
+            "distance_pct": -7.9,
             "note": "",
             "formation": "RBR"
           },
@@ -653,7 +653,7 @@
             "low": 418.28,
             "high": 426.2,
             "touches": 20,
-            "distance_pct": -19.07,
+            "distance_pct": -19.49,
             "note": "",
             "formation": "RBR"
           },
@@ -662,14 +662,14 @@
             "low": 340.35,
             "high": 348.22,
             "touches": 7,
-            "distance_pct": -34.09,
+            "distance_pct": -34.43,
             "note": "",
             "formation": ""
           }
         ]
       },
       "Monthly": {
-        "last_close": 521.73,
+        "last_close": 524.44,
         "as_of": "2026-11-01",
         "zones": [
           {
@@ -677,7 +677,7 @@
             "low": 540.4,
             "high": 553.1,
             "touches": 1,
-            "distance_pct": 4.8,
+            "distance_pct": 4.25,
             "note": "",
             "formation": ""
           },
@@ -686,7 +686,7 @@
             "low": 444.64,
             "high": 457.35,
             "touches": 2,
-            "distance_pct": -13.56,
+            "distance_pct": -14.0,
             "note": "",
             "formation": ""
           },
@@ -695,7 +695,7 @@
             "low": 400.81,
             "high": 433.2,
             "touches": 7,
-            "distance_pct": -20.07,
+            "distance_pct": -20.49,
             "note": "",
             "formation": "RBR"
           },
@@ -704,7 +704,7 @@
             "low": 376.14,
             "high": 401.0,
             "touches": 3,
-            "distance_pct": -25.52,
+            "distance_pct": -25.91,
             "note": "",
             "formation": "RBR"
           },
@@ -713,7 +713,7 @@
             "low": 361.56,
             "high": 374.26,
             "touches": 2,
-            "distance_pct": -29.48,
+            "distance_pct": -29.85,
             "note": "",
             "formation": ""
           },
@@ -722,7 +722,7 @@
             "low": 335.99,
             "high": 356.6,
             "touches": 21,
-            "distance_pct": -33.63,
+            "distance_pct": -33.97,
             "note": "",
             "formation": "RBR"
           }
@@ -731,15 +731,15 @@
     },
     "NVDA": {
       "Daily": {
-        "last_close": 168.89,
-        "as_of": "2026-11-10",
+        "last_close": 173.73,
+        "as_of": "2026-11-11",
         "zones": [
           {
             "type": "Resistance",
             "low": 227.92,
             "high": 236.54,
             "touches": 5,
-            "distance_pct": 37.6,
+            "distance_pct": 33.77,
             "note": "",
             "formation": ""
           },
@@ -748,7 +748,7 @@
             "low": 214.92,
             "high": 227.84,
             "touches": 59,
-            "distance_pct": 31.08,
+            "distance_pct": 27.43,
             "note": "",
             "formation": "RBR"
           },
@@ -757,41 +757,41 @@
             "low": 206.5,
             "high": 217.8,
             "touches": 66,
-            "distance_pct": 25.61,
+            "distance_pct": 22.11,
             "note": "",
             "formation": "RBR"
           },
           {
             "type": "Resistance",
-            "low": 206.0,
-            "high": 210.64,
+            "low": 206.03,
+            "high": 210.61,
             "touches": 3,
-            "distance_pct": 23.35,
+            "distance_pct": 19.91,
             "note": "",
             "formation": ""
           },
           {
             "type": "Support",
-            "low": 202.28,
+            "low": 204.01,
             "high": 208.65,
             "touches": 9,
-            "distance_pct": 21.66,
+            "distance_pct": 18.76,
             "note": "",
             "formation": "DBR"
           },
           {
             "type": "Resistance",
             "low": 188.0,
-            "high": 199.34,
-            "touches": 13,
-            "distance_pct": 14.53,
+            "high": 196.0,
+            "touches": 10,
+            "distance_pct": 10.5,
             "note": "",
             "formation": ""
           }
         ]
       },
       "Weekly": {
-        "last_close": 168.89,
+        "last_close": 173.73,
         "as_of": "2026-11-09",
         "zones": [
           {
@@ -799,7 +799,16 @@
             "low": 234.1,
             "high": 243.37,
             "touches": 3,
-            "distance_pct": 41.05,
+            "distance_pct": 37.12,
+            "note": "",
+            "formation": ""
+          },
+          {
+            "type": "Resistance",
+            "low": 208.07,
+            "high": 216.31,
+            "touches": 1,
+            "distance_pct": 22.14,
             "note": "",
             "formation": ""
           },
@@ -808,7 +817,7 @@
             "low": 184.48,
             "high": 197.63,
             "touches": 5,
-            "distance_pct": 13.26,
+            "distance_pct": 10.1,
             "note": "",
             "formation": ""
           },
@@ -817,7 +826,7 @@
             "low": 176.76,
             "high": 195.62,
             "touches": 31,
-            "distance_pct": 10.24,
+            "distance_pct": 7.17,
             "note": "",
             "formation": "RBR"
           },
@@ -826,32 +835,23 @@
             "low": 164.27,
             "high": 177.49,
             "touches": 1,
-            "distance_pct": 1.18,
+            "distance_pct": -1.64,
             "note": "",
             "formation": "DBR"
-          },
-          {
-            "type": "Resistance",
-            "low": 164.07,
-            "high": 176.76,
-            "touches": 5,
-            "distance_pct": 0.15,
-            "note": "price inside zone",
-            "formation": ""
           },
           {
             "type": "Support",
             "low": 128.74,
             "high": 144.42,
             "touches": 23,
-            "distance_pct": -19.13,
+            "distance_pct": -21.38,
             "note": "",
             "formation": "RBR"
           }
         ]
       },
       "Monthly": {
-        "last_close": 168.89,
+        "last_close": 173.73,
         "as_of": "2026-11-01",
         "zones": [
           {
@@ -859,7 +859,7 @@
             "low": 228.19,
             "high": 244.89,
             "touches": 1,
-            "distance_pct": 40.06,
+            "distance_pct": 36.15,
             "note": "",
             "formation": ""
           },
@@ -868,7 +868,7 @@
             "low": 203.84,
             "high": 220.54,
             "touches": 1,
-            "distance_pct": 25.64,
+            "distance_pct": 22.14,
             "note": "",
             "formation": ""
           },
@@ -877,7 +877,7 @@
             "low": 190.01,
             "high": 214.39,
             "touches": 3,
-            "distance_pct": 19.72,
+            "distance_pct": 16.39,
             "note": "",
             "formation": "RBR"
           },
@@ -886,7 +886,7 @@
             "low": 151.49,
             "high": 187.35,
             "touches": 7,
-            "distance_pct": 0.31,
+            "distance_pct": -2.48,
             "note": "",
             "formation": "RBR"
           },
@@ -895,7 +895,7 @@
             "low": 86.62,
             "high": 115.1,
             "touches": 0,
-            "distance_pct": -40.28,
+            "distance_pct": -41.94,
             "note": "",
             "formation": "DBR"
           },
@@ -904,7 +904,7 @@
             "low": -0.83,
             "high": 15.88,
             "touches": 8,
-            "distance_pct": -95.54,
+            "distance_pct": -95.67,
             "note": "",
             "formation": ""
           }
@@ -913,15 +913,15 @@
     },
     "RIVN": {
       "Daily": {
-        "last_close": 14.01,
-        "as_of": "2026-11-09",
+        "last_close": 13.54,
+        "as_of": "2026-11-11",
         "zones": [
           {
             "type": "Resistance",
-            "low": 17.08,
-            "high": 17.56,
-            "touches": 4,
-            "distance_pct": 23.14,
+            "low": 16.59,
+            "high": 17.18,
+            "touches": 5,
+            "distance_pct": 25.34,
             "note": "",
             "formation": ""
           },
@@ -930,16 +930,16 @@
             "low": 15.3,
             "high": 15.95,
             "touches": 30,
-            "distance_pct": 11.53,
+            "distance_pct": 15.4,
             "note": "",
             "formation": "DBR"
           },
           {
             "type": "Resistance",
             "low": 15.1,
-            "high": 15.47,
+            "high": 15.48,
             "touches": 3,
-            "distance_pct": 9.21,
+            "distance_pct": 13.0,
             "note": "",
             "formation": ""
           },
@@ -948,7 +948,7 @@
             "low": 14.85,
             "high": 15.45,
             "touches": 55,
-            "distance_pct": 8.14,
+            "distance_pct": 11.89,
             "note": "",
             "formation": "DBR"
           },
@@ -956,8 +956,8 @@
             "type": "Resistance",
             "low": 14.24,
             "high": 14.83,
-            "touches": 7,
-            "distance_pct": 3.55,
+            "touches": 8,
+            "distance_pct": 6.96,
             "note": "",
             "formation": ""
           },
@@ -965,15 +965,15 @@
             "type": "Support",
             "low": 14.07,
             "high": 14.86,
-            "touches": 22,
-            "distance_pct": 3.27,
+            "touches": 23,
+            "distance_pct": 6.85,
             "note": "",
             "formation": "RBR"
           }
         ]
       },
       "Weekly": {
-        "last_close": 13.7,
+        "last_close": 13.54,
         "as_of": "2026-11-09",
         "zones": [
           {
@@ -981,7 +981,7 @@
             "low": 18.07,
             "high": 19.25,
             "touches": 5,
-            "distance_pct": 36.07,
+            "distance_pct": 37.67,
             "note": "",
             "formation": ""
           },
@@ -990,7 +990,7 @@
             "low": 14.97,
             "high": 16.31,
             "touches": 58,
-            "distance_pct": 14.16,
+            "distance_pct": 15.51,
             "note": "",
             "formation": "DBR"
           },
@@ -999,7 +999,7 @@
             "low": 15.12,
             "high": 16.17,
             "touches": 5,
-            "distance_pct": 14.02,
+            "distance_pct": 15.37,
             "note": "",
             "formation": ""
           },
@@ -1008,7 +1008,7 @@
             "low": 13.3,
             "high": 14.59,
             "touches": 9,
-            "distance_pct": 2.93,
+            "distance_pct": 4.14,
             "note": "price inside zone",
             "formation": ""
           },
@@ -1017,7 +1017,7 @@
             "low": 13.31,
             "high": 14.37,
             "touches": 44,
-            "distance_pct": 1.02,
+            "distance_pct": 2.22,
             "note": "",
             "formation": "RBR"
           },
@@ -1026,14 +1026,14 @@
             "low": 11.89,
             "high": 13.56,
             "touches": 37,
-            "distance_pct": -7.12,
+            "distance_pct": -6.02,
             "note": "",
             "formation": "DBR"
           }
         ]
       },
       "Monthly": {
-        "last_close": 13.7,
+        "last_close": 13.54,
         "as_of": "2026-11-01",
         "zones": [
           {
@@ -1041,7 +1041,7 @@
             "low": 27.03,
             "high": 29.09,
             "touches": 1,
-            "distance_pct": 104.82,
+            "distance_pct": 107.24,
             "note": "",
             "formation": ""
           },
@@ -1050,7 +1050,7 @@
             "low": 21.66,
             "high": 23.72,
             "touches": 1,
-            "distance_pct": 65.62,
+            "distance_pct": 67.58,
             "note": "",
             "formation": ""
           },
@@ -1059,7 +1059,7 @@
             "low": 16.65,
             "high": 20.2,
             "touches": 5,
-            "distance_pct": 34.46,
+            "distance_pct": 36.05,
             "note": "",
             "formation": ""
           },
@@ -1068,7 +1068,7 @@
             "low": 15.12,
             "high": 18.77,
             "touches": 21,
-            "distance_pct": 23.69,
+            "distance_pct": 25.15,
             "note": "",
             "formation": "DBR"
           },
@@ -1077,7 +1077,7 @@
             "low": 11.68,
             "high": 16.75,
             "touches": 36,
-            "distance_pct": 3.76,
+            "distance_pct": 4.99,
             "note": "",
             "formation": "DBR"
           },
@@ -1086,7 +1086,7 @@
             "low": 8.26,
             "high": 12.13,
             "touches": 10,
-            "distance_pct": -25.58,
+            "distance_pct": -24.7,
             "note": "",
             "formation": "DBR"
           }
